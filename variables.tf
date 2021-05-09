@@ -12,10 +12,16 @@ variable "aws_profile" {
   description = "AWS profile with attached credentials"
 }
 
+variable "terraform_state_bucket" {
+  type        = string
+  description = "Name of bucket when terraform will save state"
+}
+
 variable "common_tags" {
   type        = map(string)
   description = "Common tags applied to multiple components"
 }
+
 
 # ---------------------------------------------------------------------------------------------------------------------
 # Route 53
@@ -85,7 +91,7 @@ variable "default_root_object" {
 
 variable "comment" {
   description = "Distribution comments"
-  default     = "Main website frontend distribution managed by Terraform"
+  default     = "Main website frontend distribution."
 }
 
 variable "price_class" {

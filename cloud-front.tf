@@ -12,7 +12,7 @@ resource "aws_cloudfront_distribution" "cloud-front-website-distribution" {
   comment             = var.comment
   default_root_object = var.default_root_object
   price_class         = var.price_class
-  aliases             = [var.domain_name, "www.${var.domain_name}"]
+  aliases             = [var.domain_name]
 
   viewer_certificate {
     acm_certificate_arn            = var.ssl_certificate_arn

@@ -40,6 +40,6 @@ data "aws_iam_policy_document" "origi_access_identity_policy" {
     }
 
     actions   = ["s3:GetObject"]
-    resources = ["arn:aws:s3:::${var.domain_name}${var.origin_path}/*"]
+    resources = ["arn:aws:s3:::${var.frontend_bucket_name}${var.origin_path}/*"]
   }
 }

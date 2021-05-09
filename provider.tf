@@ -1,4 +1,9 @@
 terraform {
+  backend "s3" {
+    region = "eu-central-1"
+    key    = "frontend-stack.tfstate"
+  }
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
@@ -9,8 +14,7 @@ terraform {
   required_version = ">= 0.14.9"
 }
 
-
 provider "aws" {
-  profile = "default"
+  profile = var.aws_profile
   region  = var.aws_region
 }
