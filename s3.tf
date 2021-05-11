@@ -42,4 +42,17 @@ data "aws_iam_policy_document" "origi_access_identity_policy" {
     actions   = ["s3:GetObject"]
     resources = ["arn:aws:s3:::${var.frontend_bucket_name}${var.origin_path}/*"]
   }
+
+  statement {
+    sid    = "FrontendCiCdSyncBucket"
+    effect = "Allow"
+
+    principals {
+      type        = "AWS"
+      identifiers = [aws_iam_user.frontend_cicd_pipline.arn]
+    }
+
+    actions   = ["s3:ListBucket"]
+    resources = ["arn:aws:s3:::${var.frontend_bucket_name}"]
+  }
 }

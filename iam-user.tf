@@ -27,11 +27,13 @@ resource "aws_iam_policy" "frontend_cicd_policy" {
 
 data "aws_iam_policy_document" "fronted_cicd_policy" {
   statement {
-    sid    = "AllowPutObjectToFrontendBucket"
+    sid    = "AllowSyncFrontendBucket"
     effect = "Allow"
 
     actions = [
-    "s3:PutObject"]
+      "s3:PutObject",
+      "s3:ListBucket"
+    ]
 
     resources = ["arn:aws:s3:::${var.frontend_bucket_name}/*"]
   }
