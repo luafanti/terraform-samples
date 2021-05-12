@@ -6,6 +6,7 @@ resource "aws_cloudfront_origin_access_identity" "cloud-front-oai" {
   comment = "Access ${var.domain_name} S3 bucket content only through CloudFront"
 }
 
+
 resource "aws_cloudfront_distribution" "cloud-front-website-distribution" {
   enabled             = var.enabled
   is_ipv6_enabled     = var.is_ipv6_enabled
@@ -46,6 +47,12 @@ resource "aws_cloudfront_distribution" "cloud-front-website-distribution" {
       }
     }
 
+    lambda_function_association {
+      event_type   = "viewer-request"
+      lambda_arn   = module.basic_auth.lambda_arn
+      include_body = false
+    }
+
     viewer_protocol_policy = var.viewer_protocol_policy
     default_ttl            = var.default_ttl
     min_ttl                = var.min_ttl
@@ -71,6 +78,20 @@ resource "aws_cloudfront_distribution" "cloud-front-website-distribution" {
       "Component" = "Frontend"
     },
   )
+}
+
+# TODO replace with custom module and disable by configuration
+module "basic_auth" {
+  source = "github.com/builtinnya/aws-lambda-edge-basic-auth-terraform/module"
+
+  basic_auth_credentials = {
+    user     = var.basic_auth_user
+    password = var.basic_auth_password
+  }
+
+  providers = {
+    aws = aws.region_use1
+  }
 }
 
 

@@ -12,9 +12,14 @@ variable "aws_profile" {
   description = "AWS profile with attached credentials"
 }
 
-variable "terraform_state_bucket" {
+variable "stack_name" {
   type        = string
-  description = "Name of bucket when terraform will save state"
+  description = "Name of the stack/project"
+}
+
+variable "environment" {
+  type        = string
+  description = "Type on environment eg. dev, stage, prod"
 }
 
 variable "common_tags" {
@@ -58,6 +63,16 @@ variable "force_destroy" {
 # ---------------------------------------------------------------------------------------------------------------------
 # Cloud Front
 # ---------------------------------------------------------------------------------------------------------------------
+
+variable "basic_auth_user" {
+  type        = string
+  description = "Username for Basic Authentication"
+}
+
+variable "basic_auth_password" {
+  type        = string
+  description = "Password for Basic Authentication"
+}
 
 variable "enabled" {
   description = "Whether the distribution is enabled to accept end user requests for content"
@@ -153,4 +168,11 @@ variable "web_acl_id" {
 }
 
 
+# ---------------------------------------------------------------------------------------------------------------------
+# ECR/ECS
+# ---------------------------------------------------------------------------------------------------------------------
 
+variable "ecr_backend_reposiotry" {
+  type        = string  
+  description = "Repository name of backend application in container registry"
+}
