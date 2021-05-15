@@ -233,3 +233,39 @@ variable "cognito_write_attributes" {
   type = list(string)
   description = "List of user pool attributes the application client can write to"
 }
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Postgres RDS
+# ---------------------------------------------------------------------------------------------------------------------
+
+variable "rds_db_instance_id" {
+  description = "Identifier of main DB instance"
+}
+
+variable "rds_db_instance_type" {
+  description = "RDS instance type"
+  default     = "db.t3.small"
+}
+
+variable "rds_db_name" {
+  description = "RDS DB name. Must begin with a letter and contain only alphanumeric characters"
+}
+
+variable "rds_db_user" {
+  description = "RDS DB username"
+}
+
+variable "rds_db_password" {
+  description = "RDS DB username"
+}
+
+variable "rds_db_allocated_storage" {
+  description = "RDS storage size in GB"
+  default     = "20"
+}
+
+variable "rds_db_storage_type" {
+  description = "RDS storage type eg. general purpose or iops"
+  default     = "gp2"
+}
