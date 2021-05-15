@@ -36,9 +36,14 @@ variable "route53_zone_id" {
   description = "Route 53 existing zone ID (created earlier manually)"
 }
 
+variable "root_domain_name" {
+  type        = string
+  description = "The root domain name address managed by Route53"
+}
+
 variable "domain_name" {
   type        = string
-  description = "The domain name for the website managed by Route53"
+  description = "The domain name for the main website managed by Route53"
 }
 
 variable "ssl_certificate_arn" {
@@ -183,11 +188,48 @@ variable "ecr_backend_reposiotry" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 variable "vpc_cidr" {
+  type = string
   description = "CIDR for the VPC"
   default     = "10.0.0.0/16"
 }
 
 variable "az_count" {
+  type = string
   description = "Number of AZs to cover in a given AWS region"
   default     = "2"
+}
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Cognito
+# ---------------------------------------------------------------------------------------------------------------------
+
+variable "cognito_client_name" {
+  type = string
+  description = "Name of client integrated with cognito"
+}
+
+variable "cognito_callback_urls" {
+  type = list(string)
+  description = "List of allowed callback URLs"
+}
+
+variable "cognito_logout_urls" {
+  type = list(string)
+  description = "List of allowed logout URLs"
+}
+
+variable "cognito_default_redirect_uri" {
+  type = string
+  description = "Default redirect URI. Must be in the list of callback URLs."
+}
+
+variable "cognito_read_attributes" {
+  type = list(string)
+  description = "List of user pool attributes the application client can read from"
+}
+
+variable "cognito_write_attributes" {
+  type = list(string)
+  description = "List of user pool attributes the application client can write to"
 }
