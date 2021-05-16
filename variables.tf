@@ -177,9 +177,42 @@ variable "web_acl_id" {
 # ECR/ECS
 # ---------------------------------------------------------------------------------------------------------------------
 
-variable "ecr_backend_reposiotry" {
+variable "ecr_backend_repository" {
   type        = string  
   description = "Repository name of backend application in container registry"
+}
+
+variable "ecs_service_name" {
+  type        = string  
+  description = "Name of backend service"
+}
+
+variable "container_port" {
+  description = "Port exposed by the docker image to redirect traffic to"
+  default     = 8080
+}
+
+variable "task_count" {
+  description = "Number of ECS tasks to run"
+  default     = 1
+}
+
+variable "fargate_cpu" {
+  type        = string  
+  description = "Fargate instance CPU units to provision (1 vCPU = 1024 CPU units)"
+  default     = "512"
+}
+
+variable "fargate_memory" {
+  type        = string  
+  description = "Fargate instance memory to provision (in MiB)"
+  default     = "1024"
+}
+
+variable "ecs_task_cw_log_stream" {
+  type        = string  
+  description = "CloudWatch Log Stream"
+  default     = "fargate"
 }
 
 

@@ -2,8 +2,8 @@
 # ECR 
 # ---------------------------------------------------------------------------------------------------------------------
 
-resource "aws_ecr_repository" "backend_reposiotry" {
-  name                 = var.ecr_backend_reposiotry
+resource "aws_ecr_repository" "backend_repository" {
+  name                 = var.ecr_backend_repository
   image_tag_mutability = "IMMUTABLE"
 
   image_scanning_configuration {
@@ -19,7 +19,7 @@ resource "aws_ecr_repository" "backend_reposiotry" {
 }
 
 resource "aws_ecr_lifecycle_policy" "ecr_base_lifecycle_policy" {
-  repository = aws_ecr_repository.backend_reposiotry.name
+  repository = aws_ecr_repository.backend_repository.name
 
 # TODO attach policy as varaible
   policy = <<EOF
@@ -56,7 +56,7 @@ EOF
 }
 
 resource "aws_ecr_repository_policy" "ecr_cicd_policy" {
-  repository = aws_ecr_repository.backend_reposiotry.name
+  repository = aws_ecr_repository.backend_repository.name
   policy = data.aws_iam_policy_document.ecr_repository_policy.json
 }
 
@@ -85,7 +85,7 @@ data "aws_iam_policy_document" "ecr_repository_policy" {
 resource "aws_ssm_parameter" "ssm_ecr_url" {
   name  = "/${var.stack_name}/${var.environment}/ecr/url"
   type  = "String"
-  value = aws_ecr_repository.backend_reposiotry.repository_url
+  value = aws_ecr_repository.backend_repository.repository_url
 
   tags = var.common_tags
 }
