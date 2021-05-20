@@ -78,3 +78,30 @@ resource "aws_route53_record" "dns-www-ipv6" {
     evaluate_target_health = false
   }
 }
+
+#Cognito auth*.
+resource "aws_route53_record" "auth-cognito-A" {
+  name    = aws_cognito_user_pool_domain.cognito_own_domain.domain
+  type    = "A"
+  zone_id = var.route53_zone_id
+  alias {
+    evaluate_target_health = false
+    name                   = aws_cognito_user_pool_domain.cognito_own_domain.cloudfront_distribution_arn
+    # This zone_id is fixed
+    zone_id = "Z2FDTNDATAQYW2"
+  }
+}
+
+#ALB api*.
+resource "aws_route53_record" "alb-alias" {
+
+  name    = var.backend_domain_name
+  type    = "A"
+  zone_id = var.route53_zone_id
+
+  alias {
+    evaluate_target_health = true
+    name                   = aws_alb.alb.dns_name
+    zone_id                = aws_alb.alb.zone_id
+  }
+}

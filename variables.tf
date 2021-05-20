@@ -41,13 +41,22 @@ variable "root_domain_name" {
   description = "The root domain name address managed by Route53"
 }
 
+variable "backend_domain_name" {
+  type        = string
+  description = "The subdomain name address backedn api manged by Route53"
+}
+
 variable "domain_name" {
   type        = string
-  description = "The domain name for the main website managed by Route53"
+  description = "The subdomain name for the main website managed by Route53"
 }
 
 variable "ssl_certificate_arn" {
-  description = "ARN of SSL certificate generate by AWS ACM"
+  description = "ARN of SSL certificate attached to CloudFront and Cognito by AWS ACM"
+}
+
+variable "alb_ssl_certificate_arn" {
+  description = "ARN of SSL attached to ALB generate by AWS ACM"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -299,4 +308,23 @@ variable "rds_db_allocated_storage" {
 variable "rds_db_storage_type" {
   description = "RDS storage type eg. general purpose or iops"
   default     = "gp2"
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# VPN 
+# ---------------------------------------------------------------------------------------------------------------------
+
+variable "vpn_server_certificate_arn" {
+  type = string
+  description = "The ARN of the ACM server certificate"
+}
+
+variable "vpn_client_certificate_arn" {
+  type = string
+  description = "The ARN of the client certificate"
+}
+
+variable "vpn_client_cidr_block" {
+  type = string
+  description = "The ARN of the client certificate"
 }

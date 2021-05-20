@@ -39,9 +39,9 @@ resource "aws_ecs_task_definition" "task-def" {
     "logConfiguration": {
             "logDriver": "awslogs",
             "options": {
-                "awslogs-group": "${var.ecs_service_name}",
+                "awslogs-group": "${aws_cloudwatch_log_group.ecs_workloads.name}",
                 "awslogs-region": "${var.aws_region}",
-                "awslogs-stream-prefix": "${var.ecs_task_cw_log_stream}"
+                "awslogs-stream-prefix": "${var.ecs_service_name}"
             }
         },
     "portMappings": [
@@ -60,15 +60,17 @@ DEFINITION
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "aws_ecs_service" "backend-service" {
-  name            = "${var.ecs_service_name}-Service"
-  cluster         = aws_ecs_cluster.ecs-cluster.id
-  task_definition = aws_ecs_task_definition.task-def.arn
-  desired_count   = var.task_count
-  launch_type     = "FARGATE"
+  name                              = "${var.ecs_service_name}-Service"
+  cluster                           = aws_ecs_cluster.ecs-cluster.id
+  task_definition                   = aws_ecs_task_definition.task-def.arn
+  desired_count                     = var.task_count
+  health_check_grace_period_seconds = 360
+  force_new_deployment              = true 
+  launch_type                       = "FARGATE"
 
   network_configuration {
-    security_groups = [aws_security_group.task-sg.id]
-    subnets         = aws_subnet.private.*.id
+    security_groups  = [aws_security_group.task-sg.id]
+    subnets          = aws_subnet.private.*.id
     assign_public_ip = true
   }
 
@@ -87,6 +89,6 @@ resource "aws_ecs_service" "backend-service" {
 # CLOUDWATCH LOG GROUP
 # ---------------------------------------------------------------------------------------------------------------------
 
-resource "aws_cloudwatch_log_group" "cw_service_log_group" {
-  name = var.ecs_service_name
+resource "aws_cloudwatch_log_group" "ecs_workloads" {
+  name = "ecs_workloads"
 }

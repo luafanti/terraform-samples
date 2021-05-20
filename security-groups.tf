@@ -50,8 +50,8 @@ resource "aws_security_group" "alb-sg" {
 
   ingress {
     protocol    = "tcp"
-    from_port   = 80
-    to_port     = 80
+    from_port   = 443
+    to_port     = 443
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -69,6 +69,24 @@ resource "aws_security_group" "alb-sg" {
     }
   )
 }
+
+# resource "aws_security_group_rule" "alb_https_ingress" {
+#   type              = "ingress"
+#   protocol          = "tcp"
+#   from_port         = 443
+#   to_port           = 443
+#   cidr_blocks = ["0.0.0.0/0"]
+#   security_group_id = aws_security_group.alb-sg.id
+# }
+
+# resource "aws_security_group_rule" "alb_http_ingress" {
+#   type              = "ingress"
+#   protocol          = "tcp"
+#   from_port         = 80
+#   to_port           = 80
+#   cidr_blocks = ["0.0.0.0/0"]
+#   security_group_id = aws_security_group.alb-sg.id
+# }
 
 # ---------------------------------------------------------------------------------------------------------------------
 # SECURITY GROUP FOR ECS TASKS

@@ -52,7 +52,7 @@ resource "aws_cognito_user_pool_client" "user_pool_client" {
   generate_secret      = true
   explicit_auth_flows  = ["ADMIN_NO_SRP_AUTH"]
   allowed_oauth_flows  = ["code"]
-  allowed_oauth_scopes = ["phone", "openid", "profile"]
+  allowed_oauth_scopes = ["email", "openid", "profile"]
 
 }
 
@@ -61,20 +61,6 @@ resource "aws_cognito_user_pool_domain" "cognito_own_domain" {
   certificate_arn = var.ssl_certificate_arn
   user_pool_id    = aws_cognito_user_pool.pool.id
 }
-
-
-resource "aws_route53_record" "auth-cognito-A" {
-  name    = aws_cognito_user_pool_domain.cognito_own_domain.domain
-  type    = "A"
-  zone_id = var.route53_zone_id
-  alias {
-    evaluate_target_health = false
-    name                   = aws_cognito_user_pool_domain.cognito_own_domain.cloudfront_distribution_arn
-    # This zone_id is fixed
-    zone_id = "Z2FDTNDATAQYW2"
-  }
-}
-
 
 resource "aws_ssm_parameter" "ssm_cognito_user_poll_client_id" {
   name  = "/${var.stack_name}/${var.environment}/cognito/clientId"
