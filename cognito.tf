@@ -16,6 +16,19 @@ resource "aws_cognito_user_pool" "pool" {
     }
   }
 
+  schema {
+    attribute_data_type = "String"
+    mutable             = true
+    name                = "client_id"
+    required            = false
+
+    string_attribute_constraints {
+      min_length = 1
+      max_length = 256
+    }
+  }
+
+
   password_policy {
     minimum_length    = "8"
     require_lowercase = false
