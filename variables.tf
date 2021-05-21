@@ -309,22 +309,3 @@ variable "rds_db_storage_type" {
   description = "RDS storage type eg. general purpose or iops"
   default     = "gp2"
 }
-
-# ---------------------------------------------------------------------------------------------------------------------
-# VPN 
-# ---------------------------------------------------------------------------------------------------------------------
-
-variable "vpn_server_certificate_arn" {
-  type = string
-  description = "The ARN of the ACM server certificate"
-}
-
-variable "vpn_client_certificate_arn" {
-  type = string
-  description = "The ARN of the client certificate"
-}
-
-variable "vpn_client_cidr_block" {
-  type = string
-  description = "The ARN of the client certificate"
-}

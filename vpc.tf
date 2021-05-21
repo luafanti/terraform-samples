@@ -105,42 +105,42 @@ resource "aws_eip" "eip" {
 # NAT Gateway
 # ---------------------------------------------------------------------------------------------------------------------
 
-# resource "aws_nat_gateway" "nat" {
-#   count         = 1
-#   subnet_id     = element(aws_subnet.public.*.id, count.index)
-#   allocation_id = element(aws_eip.eip.*.id, count.index)
+resource "aws_nat_gateway" "nat" {
+  count         = 1
+  subnet_id     = element(aws_subnet.public.*.id, count.index)
+  allocation_id = element(aws_eip.eip.*.id, count.index)
 
-#   tags = merge(
-#     var.common_tags,
-#     {
-#       Name = "${var.stack_name}-NatGateway-${count.index + 1}"
-#     }
-#   )
-# }
+  tags = merge(
+    var.common_tags,
+    {
+      Name = "${var.stack_name}-NatGateway-${count.index + 1}"
+    }
+  )
+}
 
 # ---------------------------------------------------------------------------------------------------------------------
 # Private route table
 # ---------------------------------------------------------------------------------------------------------------------
 
-# resource "aws_route_table" "private-route-table" {
-#   count  = var.az_count
-#   vpc_id = aws_vpc.main.id
+resource "aws_route_table" "private-route-table" {
+  count  = var.az_count
+  vpc_id = aws_vpc.main.id
 
-#   route {
-#     cidr_block     = "0.0.0.0/0"
-#     nat_gateway_id = element(aws_nat_gateway.nat.*.id, count.index)
-#   }
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = element(aws_nat_gateway.nat.*.id, count.index)
+  }
 
-#   tags = merge(
-#     var.common_tags,
-#     {
-#       Name = "${var.stack_name}-PrivateRouteTable-${count.index + 1}"
-#     }
-#   )
-# }
+  tags = merge(
+    var.common_tags,
+    {
+      Name = "${var.stack_name}-PrivateRouteTable-${count.index + 1}"
+    }
+  )
+}
 
-# resource "aws_route_table_association" "route-association" {
-#   count          = var.az_count
-#   subnet_id      = element(aws_subnet.private.*.id, count.index)
-#   route_table_id = element(aws_route_table.private-route-table.*.id, count.index)
-# }
+resource "aws_route_table_association" "route-association" {
+  count          = var.az_count
+  subnet_id      = element(aws_subnet.private.*.id, count.index)
+  route_table_id = element(aws_route_table.private-route-table.*.id, count.index)
+}

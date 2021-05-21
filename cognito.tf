@@ -62,6 +62,7 @@ resource "aws_cognito_user_pool_client" "user_pool_client" {
   logout_urls                  = var.cognito_logout_urls
   default_redirect_uri         = var.cognito_default_redirect_uri
 
+  allowed_oauth_flows_user_pool_client = true
   generate_secret      = true
   explicit_auth_flows  = ["ADMIN_NO_SRP_AUTH"]
   allowed_oauth_flows  = ["code"]

@@ -48,13 +48,6 @@ resource "aws_security_group" "alb-sg" {
   description = "Allow inbound access ALB from internet"
   vpc_id      = aws_vpc.main.id
 
-  ingress {
-    protocol    = "tcp"
-    from_port   = 443
-    to_port     = 443
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   egress {
     from_port   = 0
     to_port     = 0
@@ -70,23 +63,23 @@ resource "aws_security_group" "alb-sg" {
   )
 }
 
-# resource "aws_security_group_rule" "alb_https_ingress" {
-#   type              = "ingress"
-#   protocol          = "tcp"
-#   from_port         = 443
-#   to_port           = 443
-#   cidr_blocks = ["0.0.0.0/0"]
-#   security_group_id = aws_security_group.alb-sg.id
-# }
+resource "aws_security_group_rule" "alb_https_ingress" {
+  type              = "ingress"
+  protocol          = "tcp"
+  from_port         = 443
+  to_port           = 443
+  cidr_blocks = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.alb-sg.id
+}
 
-# resource "aws_security_group_rule" "alb_http_ingress" {
-#   type              = "ingress"
-#   protocol          = "tcp"
-#   from_port         = 80
-#   to_port           = 80
-#   cidr_blocks = ["0.0.0.0/0"]
-#   security_group_id = aws_security_group.alb-sg.id
-# }
+resource "aws_security_group_rule" "alb_http_ingress" {
+  type              = "ingress"
+  protocol          = "tcp"
+  from_port         = 80
+  to_port           = 80
+  cidr_blocks = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.alb-sg.id
+}
 
 # ---------------------------------------------------------------------------------------------------------------------
 # SECURITY GROUP FOR ECS TASKS
@@ -115,24 +108,6 @@ resource "aws_security_group" "task-sg" {
     var.common_tags,
     {
       Name = "${var.stack_name}-task-sg"
-    }
-  )
-}
-
-# ---------------------------------------------------------------------------------------------------------------------
-# SECURITY GROUP FOR MSK
-# ---------------------------------------------------------------------------------------------------------------------
-
-resource "aws_security_group" "msk-sg" {
-  name        = "${var.stack_name}-msk-sg"
-  description = "MSK (Kafka) Security Group"
-  vpc_id      = aws_vpc.main.id
-
-
-  tags = merge(
-    var.common_tags,
-    {
-      Name = "${var.stack_name}-msk-sg"
     }
   )
 }
