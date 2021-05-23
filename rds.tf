@@ -55,7 +55,7 @@ resource "aws_ssm_parameter" "ssm_rds_port" {
   tags = var.common_tags
 }
 
-resource "aws_ssm_parameter" "ssm_rds_jdbc_rul" {
+resource "aws_ssm_parameter" "ssm_rds_jdbc_url" {
   name  = "/${var.stack_name}/${var.environment}/rds/jdbcUrl"
   type  = "String"
   value = "jdbc:postgresql://${aws_db_instance.postgres_rds.address}/${var.rds_db_name}"

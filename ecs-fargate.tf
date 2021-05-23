@@ -36,6 +36,11 @@ resource "aws_ecs_task_definition" "task-def" {
     "memory": ${var.fargate_memory},
     "name": "${var.ecs_service_name}",
     "networkMode": "awsvpc",
+    "secrets": [
+            {"name": "JDBC_URL", "valueFrom": "${aws_ssm_parameter.ssm_rds_jdbc_url.arn}"},
+            {"name": "DB_USERNAME", "valueFrom": "${aws_ssm_parameter.ssm_rds_username.arn}"},
+            {"name": "DB_PASSWORD", "valueFrom": "${aws_ssm_parameter.ssm_rds_password.arn}"}
+        ],
     "logConfiguration": {
             "logDriver": "awslogs",
             "options": {
