@@ -23,6 +23,22 @@ resource "aws_alb_target_group" "trgp" {
   target_type = "ip"
 }
 
+resource "aws_alb_target_group" "blue-target-group" {
+  name        = "${var.stack_name}-blue-tgrp"
+  port        = 80
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.main.id
+  target_type = "ip"
+}
+
+resource "aws_alb_target_group" "green-target-group" {
+  name        = "${var.stack_name}-green-tgrp"
+  port        = 80
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.main.id
+  target_type = "ip"
+}
+
 # ---------------------------------------------------------------------------------------------------------------------
 # ALB LISTENER
 # ---------------------------------------------------------------------------------------------------------------------
@@ -36,7 +52,7 @@ resource "aws_alb_listener" "alb-listener" {
 
 
   default_action {
-    target_group_arn = aws_alb_target_group.trgp.id
+    target_group_arn = aws_alb_target_group.blue-target-group.id
     type             = "forward"
   }
 }

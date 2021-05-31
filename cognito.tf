@@ -28,6 +28,9 @@ resource "aws_cognito_user_pool" "pool" {
     }
   }
 
+  admin_create_user_config {
+    allow_admin_create_user_only = true
+  }
 
   password_policy {
     minimum_length    = "8"
@@ -116,10 +119,20 @@ resource "aws_ssm_parameter" "ssm_cognito_user_poll_id" {
   tags = var.common_tags
 }
 
-resource "aws_ssm_parameter" "ssm_cognito_url" {
+resource "aws_ssm_parameter" "ssm_cognito_user_poll_endpoint" {
+  name  = "/${var.stack_name}/${var.environment}/cognito/poleEndpoint"
+  type  = "String"
+  value = aws_cognito_user_pool.pool.endpoint
+
+  tags = var.common_tags
+}
+
+resource "aws_ssm_parameter" "ssm_cognito_auth_domain" {
   name  = "/${var.stack_name}/${var.environment}/cognito/domain"
   type  = "String"
   value = aws_cognito_user_pool_domain.cognito_own_domain.domain
 
   tags = var.common_tags
 }
+
+

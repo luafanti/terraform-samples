@@ -36,10 +36,21 @@ resource "aws_ecs_task_definition" "task-def" {
     "memory": ${var.fargate_memory},
     "name": "${var.ecs_service_name}",
     "networkMode": "awsvpc",
+    "environment": [
+            {"name": "SPRING_PROFILES_ACTIVE", "value": "prod"},
+            {"name": "OBSERVABILITY_DATADOG_ENABLED", "value": "false"}
+        ],
     "secrets": [
-            {"name": "JDBC_URL", "valueFrom": "${aws_ssm_parameter.ssm_rds_jdbc_url.arn}"},
-            {"name": "DB_USERNAME", "valueFrom": "${aws_ssm_parameter.ssm_rds_username.arn}"},
-            {"name": "DB_PASSWORD", "valueFrom": "${aws_ssm_parameter.ssm_rds_password.arn}"}
+            {"name": "DATA_SOURCE_POSTGRES_JDBC_URL", "valueFrom": "${aws_ssm_parameter.ssm_rds_jdbc_url.arn}"},
+            {"name": "DATA_SOURCE_POSTGRES_USERNAME", "valueFrom": "${aws_ssm_parameter.ssm_rds_username.arn}"},
+            {"name": "DATA_SOURCE_POSTGRES_PASSWORD", "valueFrom": "${aws_ssm_parameter.ssm_rds_password.arn}"},
+            {"name": "SECURITY_COGNITO_CLIENT_NAME", "valueFrom": "${aws_ssm_parameter.ssm_cognito_user_poll_name.arn}"},
+            {"name": "SECURITY_COGNITO_CLIENT_ID", "valueFrom": "${aws_ssm_parameter.ssm_cognito_user_poll_client_id.arn}"},
+            {"name": "SECURITY_COGNITO_CLIENT_SECRET", "valueFrom": "${aws_ssm_parameter.ssm_cognito_user_poll_client_secret.arn}"},
+            {"name": "SECURITY_COGNITO_USER_POOL_ENDPOINT", "valueFrom": "${aws_ssm_parameter.ssm_cognito_user_poll_endpoint.arn}"},
+            {"name": "SECURITY_COGNITO_AUTH_DOMAIN", "valueFrom": "${aws_ssm_parameter.ssm_cognito_auth_domain.arn}"},
+            {"name": "APP_API_DOMAIN", "valueFrom": "${aws_ssm_parameter.api_domain.arn}"},
+            {"name": "APP_MAIN_DOMAIN", "valueFrom": "${aws_ssm_parameter.app_main_domain.arn}"}
         ],
     "logConfiguration": {
             "logDriver": "awslogs",
@@ -65,7 +76,7 @@ DEFINITION
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "aws_ecs_service" "backend-service" {
-  name                              = "${var.ecs_service_name}-Service"
+  name                              = "${var.ecs_service_name}-service"
   cluster                           = aws_ecs_cluster.ecs-cluster.id
   task_definition                   = aws_ecs_task_definition.task-def.arn
   desired_count                     = var.task_count
@@ -80,14 +91,25 @@ resource "aws_ecs_service" "backend-service" {
   }
 
   load_balancer {
-    target_group_arn = aws_alb_target_group.trgp.id
+    target_group_arn = aws_alb_target_group.blue-target-group.id
     container_name   = var.ecs_service_name
     container_port   = var.container_port
+  }
+
+  deployment_controller {
+    type = "CODE_DEPLOY"
   }
 
   depends_on = [
     aws_alb_listener.alb-listener,
   ]
+
+  tags = merge(
+    var.common_tags,
+    {
+      Component = "Backend"
+    }
+  )
 }
 
 # ---------------------------------------------------------------------------------------------------------------------

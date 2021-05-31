@@ -27,12 +27,12 @@ resource "aws_ecr_lifecycle_policy" "ecr_base_lifecycle_policy" {
     "rules": [
         {
             "rulePriority": 1,
-            "description": "Keep last 60 tagged images",
+            "description": "Keep last 20 tagged images",
             "selection": {
                 "tagStatus": "tagged",
                 "tagPrefixList": ["test", "dev", "prod"],
                 "countType": "imageCountMoreThan",
-                "countNumber": 60
+                "countNumber": 20
             },
             "action": {
                 "type": "expire"
@@ -40,11 +40,11 @@ resource "aws_ecr_lifecycle_policy" "ecr_base_lifecycle_policy" {
         },
         {
             "rulePriority": 2,
-            "description": "Keep last 30 untagged images",
+            "description": "Keep last 5 untagged images",
             "selection": {
                 "tagStatus": "untagged",
                 "countType": "imageCountMoreThan",
-                "countNumber": 30
+                "countNumber": 5
             },
             "action": {
                 "type": "expire"

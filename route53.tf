@@ -105,3 +105,19 @@ resource "aws_route53_record" "alb-alias" {
     zone_id                = aws_alb.alb.zone_id
   }
 }
+
+resource "aws_ssm_parameter" "api_domain" {
+  name  = "/${var.stack_name}/${var.environment}/route53/apiDomain"
+  type  = "String"
+  value = var.backend_domain_name
+
+  tags = var.common_tags
+}
+
+resource "aws_ssm_parameter" "app_main_domain" {
+  name  = "/${var.stack_name}/${var.environment}/route53/appMainDomain"
+  type  = "String"
+  value = var.domain_name
+
+  tags = var.common_tags
+}
