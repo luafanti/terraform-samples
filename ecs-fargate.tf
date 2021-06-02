@@ -38,7 +38,7 @@ resource "aws_ecs_task_definition" "task-def" {
     "networkMode": "awsvpc",
     "environment": [
             {"name": "SPRING_PROFILES_ACTIVE", "value": "prod"},
-            {"name": "OBSERVABILITY_DATADOG_ENABLED", "value": "false"}
+            {"name": "OBSERVABILITY_DATADOG_ENABLED", "value": "true"}
         ],
     "secrets": [
             {"name": "DATA_SOURCE_POSTGRES_JDBC_URL", "valueFrom": "${aws_ssm_parameter.ssm_rds_jdbc_url.arn}"},
@@ -50,7 +50,11 @@ resource "aws_ecs_task_definition" "task-def" {
             {"name": "SECURITY_COGNITO_USER_POOL_ENDPOINT", "valueFrom": "${aws_ssm_parameter.ssm_cognito_user_poll_endpoint.arn}"},
             {"name": "SECURITY_COGNITO_AUTH_DOMAIN", "valueFrom": "${aws_ssm_parameter.ssm_cognito_auth_domain.arn}"},
             {"name": "APP_API_DOMAIN", "valueFrom": "${aws_ssm_parameter.api_domain.arn}"},
-            {"name": "APP_MAIN_DOMAIN", "valueFrom": "${aws_ssm_parameter.app_main_domain.arn}"}
+            {"name": "APP_MAIN_DOMAIN", "valueFrom": "${aws_ssm_parameter.app_main_domain.arn}"},
+            {"name": "INTEGRATIONS_SOCKETLABS_SERVER_ID", "valueFrom": "${aws_ssm_parameter.ssm_integrations_socketlabs_server_id.arn}"},
+            {"name": "INTEGRATIONS_SOCKETLABS_API_KEY", "valueFrom": "${aws_ssm_parameter.ssm_integrations_socketlabs_api_key.arn}"},
+            {"name": "OBSERVABILITY_DATADOG_API_KEY", "valueFrom": "${aws_ssm_parameter.ssm_integrations_datadog_api_key.arn}"},
+            {"name": "OBSERVABILITY_DATADOG_APPLICATION_KEY", "valueFrom": "${aws_ssm_parameter.ssm_integrations_datadog_app_id.arn}"}
         ],
     "logConfiguration": {
             "logDriver": "awslogs",

@@ -68,6 +68,11 @@ variable "frontend_bucket_name" {
   description = "The name of the bucket when reside all static frontend files"
 }
 
+variable "deployment_bucket_name" {
+  type        = string
+  description = "The name of the bucket for deployment purpose"
+}
+
 variable "force_destroy" {
   type        = string
   description = "All objects should be deleted from the bucket so that the bucket can be destroyed without error"
@@ -276,7 +281,6 @@ variable "cognito_write_attributes" {
   description = "List of user pool attributes the application client can write to"
 }
 
-
 # ---------------------------------------------------------------------------------------------------------------------
 # Postgres RDS
 # ---------------------------------------------------------------------------------------------------------------------
@@ -308,4 +312,28 @@ variable "rds_db_allocated_storage" {
 variable "rds_db_storage_type" {
   description = "RDS storage type eg. general purpose or iops"
   default     = "gp2"
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Integrations
+# ---------------------------------------------------------------------------------------------------------------------
+
+variable "integration_socketlabs_server_id" {
+  type = string
+  description = "SocketLabs server id"
+}
+
+variable "integration_socketlabs_server_api_key" {
+  type = string
+  description = "API key for SocketLabs server"
+}
+
+variable "integration_datadog_api_key" {
+  type = string
+  description = "DataDog API KEY"
+}
+
+variable "integration_datadog_app_id" {
+  type = string
+  description = "DataDog Application ID"
 }

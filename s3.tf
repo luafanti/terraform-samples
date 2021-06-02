@@ -56,3 +56,21 @@ data "aws_iam_policy_document" "origi_access_identity_policy" {
     resources = ["arn:aws:s3:::${var.frontend_bucket_name}"]
   }
 }
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# S3 Bucket for backend deployment
+# ---------------------------------------------------------------------------------------------------------------------
+
+resource "aws_s3_bucket" "deployment_bucket" {
+  bucket        = "${var.deployment_bucket_name}-${var.environment}"
+  acl           = "private"
+  force_destroy = var.force_destroy
+
+  tags = merge(
+    var.common_tags,
+    {
+      "Component" = "CI/CD"
+    },
+  )
+}

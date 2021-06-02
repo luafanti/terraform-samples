@@ -48,6 +48,18 @@ resource "aws_iam_policy" "backend_cicd_policy" {
   )
 }
 
+resource "aws_iam_policy" "backend_cicd_ecs_deployment_policy" {
+  name   = "AllowCreateECSDeployment"
+  policy = data.aws_iam_policy_document.backend_ecs_deployment_cicd_policy.json
+
+  tags = merge(
+    var.common_tags,
+    {
+      "Component" = "CI/CD"
+    },
+  )
+}
+
 data "aws_iam_policy_document" "fronted_cicd_policy" {
   statement {
     sid    = "AllowSyncFrontendBucket"
@@ -85,6 +97,67 @@ data "aws_iam_policy_document" "backend_cicd_policy" {
   }
 }
 
+data "aws_iam_policy_document" "backend_ecs_deployment_cicd_policy" {
+
+  statement {
+    sid    = "AllowUpdateECSService"
+    effect = "Allow"
+    actions = [
+      "ecs:UpdateService",
+      "codedeploy:GetApplicationRevision",
+      "codedeploy:RegisterApplicationRevision"
+    ]
+
+    resources = [
+      aws_ecs_service.backend-service.id,
+      aws_codedeploy_app.backend-deployment-app.arn
+    ]
+  }
+
+  statement {
+    sid    = "AllowCreateDeployment"
+    effect = "Allow"
+    actions = [
+      "codedeploy:CreateDeployment"
+    ]
+
+    resources = [
+      aws_codedeploy_deployment_group.backend-deployment-group.arn
+    ]
+  }
+
+  statement {
+    sid    = "AllowReadDeploymentConfig"
+    effect = "Allow"
+    actions = [
+      "codedeploy:GetDeploymentConfig"
+    ]
+
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "AllowReadTaskDefinition"
+    effect = "Allow"
+    actions = [
+      "ecs:ListTaskDefinitions",
+      "ecs:DescribeTaskDefinition"
+    ]
+
+    resources = ["*"]
+  }
+
+  statement {
+    sid    = "AllowWriteToDeploymentBucket"
+    effect = "Allow"
+    actions = [
+      "s3:PutObject"
+    ]
+
+    resources = ["${aws_s3_bucket.deployment_bucket.arn}/*"]
+  }
+}
+
 resource "aws_iam_user_policy_attachment" "frontend_cicd_policy_attach" {
   user       = aws_iam_user.frontend_cicd_pipline.name
   policy_arn = aws_iam_policy.frontend_cicd_policy.arn
@@ -93,4 +166,9 @@ resource "aws_iam_user_policy_attachment" "frontend_cicd_policy_attach" {
 resource "aws_iam_user_policy_attachment" "backend_cicd_policy_attach" {
   user       = aws_iam_user.backend_cicd_pipline.name
   policy_arn = aws_iam_policy.backend_cicd_policy.arn
+}
+
+resource "aws_iam_user_policy_attachment" "backend_cicd_ecs_deployment_policy_attach" {
+  user       = aws_iam_user.backend_cicd_pipline.name
+  policy_arn = aws_iam_policy.backend_cicd_ecs_deployment_policy.arn
 }
