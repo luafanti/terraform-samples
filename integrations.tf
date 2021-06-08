@@ -19,6 +19,14 @@ resource "aws_ssm_parameter" "ssm_integrations_socketlabs_api_key" {
   tags = var.common_tags
 }
 
+resource "aws_ssm_parameter" "ssm_integrations_socketlabs_notifications_api_key" {
+  name  = "/${var.stack_name}/${var.environment}/integrations/socketLabs/notificationsApiKey"
+  type  = "SecureString"
+  value = var.integration_socketlabs_notifications_api_key
+
+  tags = var.common_tags
+}
+
 # ---------------------------------------------------------------------------------------------------------------------
 # DataDog
 # ---------------------------------------------------------------------------------------------------------------------

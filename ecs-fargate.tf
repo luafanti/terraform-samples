@@ -52,7 +52,8 @@ resource "aws_ecs_task_definition" "task-def" {
             {"name": "APP_API_DOMAIN", "valueFrom": "${aws_ssm_parameter.api_domain.arn}"},
             {"name": "APP_MAIN_DOMAIN", "valueFrom": "${aws_ssm_parameter.app_main_domain.arn}"},
             {"name": "INTEGRATIONS_SOCKETLABS_SERVER_ID", "valueFrom": "${aws_ssm_parameter.ssm_integrations_socketlabs_server_id.arn}"},
-            {"name": "INTEGRATIONS_SOCKETLABS_API_KEY", "valueFrom": "${aws_ssm_parameter.ssm_integrations_socketlabs_api_key.arn}"},
+            {"name": "INTEGRATIONS_SOCKETLABS_SENDING_API_KEY", "valueFrom": "${aws_ssm_parameter.ssm_integrations_socketlabs_api_key.arn}"},
+            {"name": "INTEGRATIONS_SOCKETLABS_NOTIFICATIONS_API_KEY", "valueFrom": "${aws_ssm_parameter.ssm_integrations_socketlabs_notifications_api_key.arn}"},
             {"name": "OBSERVABILITY_DATADOG_API_KEY", "valueFrom": "${aws_ssm_parameter.ssm_integrations_datadog_api_key.arn}"},
             {"name": "OBSERVABILITY_DATADOG_APPLICATION_KEY", "valueFrom": "${aws_ssm_parameter.ssm_integrations_datadog_app_id.arn}"}
         ],
@@ -82,7 +83,7 @@ DEFINITION
 resource "aws_ecs_service" "backend-service" {
   name                              = "${var.ecs_service_name}-service"
   cluster                           = aws_ecs_cluster.ecs-cluster.id
-  task_definition                   = aws_ecs_task_definition.task-def.arn
+    task_definition                   = aws_ecs_task_definition.task-def.arn
   desired_count                     = var.task_count
   health_check_grace_period_seconds = 360
   force_new_deployment              = true 

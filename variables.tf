@@ -328,6 +328,11 @@ variable "integration_socketlabs_server_api_key" {
   description = "API key for SocketLabs server"
 }
 
+variable "integration_socketlabs_notifications_api_key" {
+  type = string
+  description = "API key for fallback notifications from SocketLabs"
+}
+
 variable "integration_datadog_api_key" {
   type = string
   description = "DataDog API KEY"
