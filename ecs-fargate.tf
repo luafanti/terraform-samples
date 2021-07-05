@@ -55,7 +55,8 @@ resource "aws_ecs_task_definition" "task-def" {
             {"name": "INTEGRATIONS_SOCKETLABS_SENDING_API_KEY", "valueFrom": "${aws_ssm_parameter.ssm_integrations_socketlabs_api_key.arn}"},
             {"name": "INTEGRATIONS_SOCKETLABS_NOTIFICATIONS_API_KEY", "valueFrom": "${aws_ssm_parameter.ssm_integrations_socketlabs_notifications_api_key.arn}"},
             {"name": "OBSERVABILITY_DATADOG_API_KEY", "valueFrom": "${aws_ssm_parameter.ssm_integrations_datadog_api_key.arn}"},
-            {"name": "OBSERVABILITY_DATADOG_APPLICATION_KEY", "valueFrom": "${aws_ssm_parameter.ssm_integrations_datadog_app_id.arn}"}
+            {"name": "OBSERVABILITY_DATADOG_APPLICATION_KEY", "valueFrom": "${aws_ssm_parameter.ssm_integrations_datadog_app_id.arn}"},
+            {"name": "INTEGRATIONS_ELASTIC_API_KEY", "valueFrom": "${aws_ssm_parameter.ssm_integrations_elastic_api_key.arn}"}
         ],
     "logConfiguration": {
             "logDriver": "awslogs",

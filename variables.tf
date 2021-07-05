@@ -342,3 +342,8 @@ variable "integration_datadog_app_id" {
   type = string
   description = "DataDog Application ID"
 }
+
+variable "integration_elastic_api_key" {
+  type = string
+  description = "Elastic IO API KEY"
+}

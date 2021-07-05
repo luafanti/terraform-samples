@@ -47,3 +47,17 @@ resource "aws_ssm_parameter" "ssm_integrations_datadog_app_id" {
 
   tags = var.common_tags
 }
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Elastic IO
+# ---------------------------------------------------------------------------------------------------------------------
+
+
+resource "aws_ssm_parameter" "ssm_integrations_elastic_api_key" {
+  name  = "/${var.stack_name}/${var.environment}/integrations/elastic/apiKey"
+  type  = "SecureString"
+  value = var.integration_datadog_api_key
+
+  tags = var.common_tags
+
+}
