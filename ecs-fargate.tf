@@ -100,7 +100,7 @@ DEFINITION
 resource "aws_ecs_service" "backend-service" {
   name                              = "${var.ecs_service_name}-service"
   cluster                           = aws_ecs_cluster.ecs-cluster.id
-    task_definition                   = aws_ecs_task_definition.task-def.arn
+  task_definition                   = aws_ecs_task_definition.task-def.arn
   desired_count                     = var.task_count
   health_check_grace_period_seconds = 360
   force_new_deployment              = true 

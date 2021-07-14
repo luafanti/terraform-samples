@@ -84,6 +84,13 @@ resource "aws_cognito_user_pool_client" "user_pool_client" {
 
 }
 
+resource "aws_cognito_user_pool_ui_customization" "cognito_ui" {
+  client_id = aws_cognito_user_pool_client.user_pool_client.id
+  css        = file("resources/cognito-ui.css")
+  image_file = filebase64("resources/veita-logo.png")
+  user_pool_id = aws_cognito_user_pool_domain.cognito_own_domain.user_pool_id
+}
+
 resource "aws_cognito_user_pool_domain" "cognito_own_domain" {
   domain          = "auth.${var.root_domain_name}"
   certificate_arn = var.ssl_certificate_arn
