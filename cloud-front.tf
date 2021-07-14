@@ -47,12 +47,7 @@ resource "aws_cloudfront_distribution" "cloud-front-website-distribution" {
       }
     }
 
-    lambda_function_association {
-      event_type   = "viewer-request"
-      lambda_arn   = module.basic_auth.lambda_arn
-      include_body = false
-    }
-
+ 
     viewer_protocol_policy = var.viewer_protocol_policy
     default_ttl            = var.default_ttl
     min_ttl                = var.min_ttl
@@ -67,6 +62,13 @@ resource "aws_cloudfront_distribution" "cloud-front-website-distribution" {
     }
   }
 
+  custom_error_response {
+    error_caching_min_ttl = "0"
+    error_code            = "403"
+    response_code         = "200"
+    response_page_path    = "/index.html"
+  }
+
   wait_for_deployment = var.wait_for_deployment
   web_acl_id          = var.web_acl_id
 
@@ -78,20 +80,6 @@ resource "aws_cloudfront_distribution" "cloud-front-website-distribution" {
       "Component" = "Frontend"
     },
   )
-}
-
-# TODO replace with custom module and disable by configuration
-module "basic_auth" {
-  source = "github.com/builtinnya/aws-lambda-edge-basic-auth-terraform/module"
-
-  basic_auth_credentials = {
-    user     = var.basic_auth_user
-    password = var.basic_auth_password
-  }
-
-  providers = {
-    aws = aws.region_use1
-  }
 }
 
 

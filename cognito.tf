@@ -55,7 +55,6 @@ resource "aws_cognito_user_pool_client" "user_pool_client" {
   user_pool_id = aws_cognito_user_pool.pool.id
 
   name                   = var.cognito_client_name
-  refresh_token_validity = 30
   read_attributes        = var.cognito_read_attributes
   write_attributes       = var.cognito_write_attributes
 
@@ -66,10 +65,22 @@ resource "aws_cognito_user_pool_client" "user_pool_client" {
   default_redirect_uri         = var.cognito_default_redirect_uri
 
   allowed_oauth_flows_user_pool_client = true
-  generate_secret      = true
-  explicit_auth_flows  = ["ADMIN_NO_SRP_AUTH"]
-  allowed_oauth_flows  = ["code"]
+  generate_secret      = false
+  explicit_auth_flows  = ["ALLOW_USER_SRP_AUTH", "ALLOW_REFRESH_TOKEN_AUTH", "ALLOW_USER_PASSWORD_AUTH",]
+  allowed_oauth_flows  = ["implicit"]
   allowed_oauth_scopes = ["email", "openid", "profile"]
+
+  id_token_validity = 1
+  access_token_validity = 1
+  refresh_token_validity = 30
+
+  prevent_user_existence_errors = "ENABLED"
+
+  token_validity_units {
+    access_token = "days"
+    id_token = "days"
+    refresh_token = "days"
+  }
 
 }
 
@@ -87,13 +98,6 @@ resource "aws_ssm_parameter" "ssm_cognito_user_poll_client_id" {
   tags = var.common_tags
 }
 
-resource "aws_ssm_parameter" "ssm_cognito_user_poll_client_secret" {
-  name  = "/${var.stack_name}/${var.environment}/cognito/clientSecret"
-  type  = "String"
-  value = aws_cognito_user_pool_client.user_pool_client.client_secret
-
-  tags = var.common_tags
-}
 
 resource "aws_ssm_parameter" "ssm_cognito_user_poll_scopes" {
   name  = "/${var.stack_name}/${var.environment}/cognito/scopes"

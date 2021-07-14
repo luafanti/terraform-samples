@@ -314,6 +314,27 @@ variable "rds_db_storage_type" {
   default     = "gp2"
 }
 
+variable "rds_db_backup_retention_period" {
+  description = "Backup retention period"
+  default     = "7"
+}
+
+variable "rds_db_backup_retention_period_window" {
+  description = "Prefered time windows for autamted backups"
+  default     = "04:00-04:30"
+}
+
+variable "rds_db_insights_enabled" {
+  description = "Performance tuning and monitoring feature enabled"
+  default     = true
+}
+
+variable "rds_db_insights_retention_period" {
+  description = "performance tuning and monitoring feature retention period"
+  default     = "7"
+}
+
+  
 # ---------------------------------------------------------------------------------------------------------------------
 # Integrations
 # ---------------------------------------------------------------------------------------------------------------------

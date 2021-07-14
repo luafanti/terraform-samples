@@ -8,7 +8,7 @@ resource "aws_db_subnet_group" "db-subnet-grp" {
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
-# RDS (MYSQL)
+# RDS (Postgres)
 # ---------------------------------------------------------------------------------------------------------------------
 
 resource "aws_db_instance" "postgres_rds" {
@@ -30,6 +30,13 @@ resource "aws_db_instance" "postgres_rds" {
   db_subnet_group_name   = aws_db_subnet_group.db-subnet-grp.id
   publicly_accessible    = false
   skip_final_snapshot    = true
+
+  backup_retention_period = var.rds_db_backup_retention_period
+  backup_window = var.rds_db_backup_retention_period_window
+  performance_insights_enabled = var.rds_db_insights_enabled
+  performance_insights_retention_period = var.rds_db_insights_retention_period
+
+  apply_immediately = true
 
   tags = merge(
     var.common_tags,

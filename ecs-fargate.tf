@@ -46,7 +46,6 @@ resource "aws_ecs_task_definition" "task-def" {
             {"name": "DATA_SOURCE_POSTGRES_PASSWORD", "valueFrom": "${aws_ssm_parameter.ssm_rds_password.arn}"},
             {"name": "SECURITY_COGNITO_CLIENT_NAME", "valueFrom": "${aws_ssm_parameter.ssm_cognito_user_poll_name.arn}"},
             {"name": "SECURITY_COGNITO_CLIENT_ID", "valueFrom": "${aws_ssm_parameter.ssm_cognito_user_poll_client_id.arn}"},
-            {"name": "SECURITY_COGNITO_CLIENT_SECRET", "valueFrom": "${aws_ssm_parameter.ssm_cognito_user_poll_client_secret.arn}"},
             {"name": "SECURITY_COGNITO_USER_POOL_ENDPOINT", "valueFrom": "${aws_ssm_parameter.ssm_cognito_user_poll_endpoint.arn}"},
             {"name": "SECURITY_COGNITO_AUTH_DOMAIN", "valueFrom": "${aws_ssm_parameter.ssm_cognito_auth_domain.arn}"},
             {"name": "APP_API_DOMAIN", "valueFrom": "${aws_ssm_parameter.api_domain.arn}"},
@@ -59,20 +58,37 @@ resource "aws_ecs_task_definition" "task-def" {
             {"name": "INTEGRATIONS_ELASTIC_API_KEY", "valueFrom": "${aws_ssm_parameter.ssm_integrations_elastic_api_key.arn}"}
         ],
     "logConfiguration": {
-            "logDriver": "awslogs",
-            "options": {
-                "awslogs-group": "${aws_cloudwatch_log_group.ecs_workloads.name}",
-                "awslogs-region": "${var.aws_region}",
-                "awslogs-stream-prefix": "${var.ecs_service_name}"
-            }
-        },
+      "logDriver": "awsfirelens",
+      "options": {
+        "Name": "datadog",
+        "apikey": "${var.integration_datadog_api_key}",
+        "dd_service": "${var.ecs_service_name}-${var.environment}",
+        "dd_source": "spring-boot",
+        "provider": "ecs",
+        "Host": "http-intake.logs.datadoghq.eu"
+      }
+    },
     "portMappings": [
       {
         "containerPort": ${var.container_port},
         "hostPort": ${var.container_port}
       }
     ]
+  },
+  {
+    "essential": true,
+    "image": "amazon/aws-for-fluent-bit:latest",
+    "name": "log_router",
+    "firelensConfiguration": {
+      "type": "fluentbit",
+      "options": {
+        "config-file-type": "file",
+        "config-file-value": "/fluent-bit/configs/parse-json.conf",
+        "enable-ecs-log-metadata": "true"
+      }
+    }
   }
+ 
 ]
 DEFINITION
 }
@@ -109,6 +125,10 @@ resource "aws_ecs_service" "backend-service" {
   depends_on = [
     aws_alb_listener.alb-listener,
   ]
+
+  lifecycle {
+    ignore_changes = [task_definition]
+  }
 
   tags = merge(
     var.common_tags,
