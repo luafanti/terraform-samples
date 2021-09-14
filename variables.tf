@@ -349,6 +349,16 @@ variable "integration_socketlabs_server_api_key" {
   description = "API key for SocketLabs server"
 }
 
+variable "integration_socketlabs_non_tracking_server_id" {
+  type = string
+  description = "SocketLabs non tracking server id"
+}
+
+variable "integration_socketlabs_non_tracking_api_key" {
+  type = string
+  description = "API key for non tracking SocketLabs server"
+}
+
 variable "integration_socketlabs_notifications_api_key" {
   type = string
   description = "API key for fallback notifications from SocketLabs"

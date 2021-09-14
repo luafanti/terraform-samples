@@ -36,3 +36,4 @@ terraform.rc
 
 #vs-code
 .history/*
+.vscode/*

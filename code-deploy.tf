@@ -77,11 +77,12 @@ resource "aws_codedeploy_deployment_group" "backend-deployment-group" {
   blue_green_deployment_config {
     deployment_ready_option {
       action_on_timeout = "CONTINUE_DEPLOYMENT"
+      wait_time_in_minutes = "0"
     }
 
     terminate_blue_instances_on_deployment_success {
       action                           = "TERMINATE"
-      termination_wait_time_in_minutes = 0
+      termination_wait_time_in_minutes = 5
     }
   }
 
@@ -99,6 +100,10 @@ resource "aws_codedeploy_deployment_group" "backend-deployment-group" {
     target_group_pair_info {
       prod_traffic_route {
         listener_arns = [aws_alb_listener.alb-listener.arn]
+      }
+
+      test_traffic_route {
+        listener_arns = [aws_lb_listener.alb-test-listener.arn]
       }
 
       target_group {

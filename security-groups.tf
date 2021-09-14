@@ -81,6 +81,15 @@ resource "aws_security_group_rule" "alb_http_ingress" {
   security_group_id = aws_security_group.alb-sg.id
 }
 
+resource "aws_security_group_rule" "alb_testing_ingress" {
+  type              = "ingress"
+  protocol          = "tcp"
+  from_port         = 8443
+  to_port           = 8443
+  cidr_blocks = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.alb-sg.id
+}
+
 # ---------------------------------------------------------------------------------------------------------------------
 # SECURITY GROUP FOR ECS TASKS
 # ---------------------------------------------------------------------------------------------------------------------

@@ -20,6 +20,7 @@ resource "aws_ecs_task_definition" "task-def" {
   cpu                      = var.fargate_cpu
   memory                   = var.fargate_memory
   execution_role_arn       = aws_iam_role.tasks-service-role.arn
+  task_role_arn            = aws_iam_role.application_role.arn
 
    tags = merge(
     var.common_tags,
@@ -38,7 +39,8 @@ resource "aws_ecs_task_definition" "task-def" {
     "networkMode": "awsvpc",
     "environment": [
             {"name": "SPRING_PROFILES_ACTIVE", "value": "prod"},
-            {"name": "OBSERVABILITY_DATADOG_ENABLED", "value": "true"}
+            {"name": "OBSERVABILITY_DATADOG_ENABLED", "value": "true"},
+            {"name": "APP_SILENT_MODE", "value": "true"}
         ],
     "secrets": [
             {"name": "DATA_SOURCE_POSTGRES_JDBC_URL", "valueFrom": "${aws_ssm_parameter.ssm_rds_jdbc_url.arn}"},
@@ -50,13 +52,27 @@ resource "aws_ecs_task_definition" "task-def" {
             {"name": "SECURITY_COGNITO_AUTH_DOMAIN", "valueFrom": "${aws_ssm_parameter.ssm_cognito_auth_domain.arn}"},
             {"name": "APP_API_DOMAIN", "valueFrom": "${aws_ssm_parameter.api_domain.arn}"},
             {"name": "APP_MAIN_DOMAIN", "valueFrom": "${aws_ssm_parameter.app_main_domain.arn}"},
-            {"name": "INTEGRATIONS_SOCKETLABS_SERVER_ID", "valueFrom": "${aws_ssm_parameter.ssm_integrations_socketlabs_server_id.arn}"},
-            {"name": "INTEGRATIONS_SOCKETLABS_SENDING_API_KEY", "valueFrom": "${aws_ssm_parameter.ssm_integrations_socketlabs_api_key.arn}"},
-            {"name": "INTEGRATIONS_SOCKETLABS_NOTIFICATIONS_API_KEY", "valueFrom": "${aws_ssm_parameter.ssm_integrations_socketlabs_notifications_api_key.arn}"},
+            {"name": "INTEGRATIONS_SOCKETLABS_TRACKING_SERVER_ID", "valueFrom": "${aws_ssm_parameter.ssm_integrations_socketlabs_server_id.arn}"},
+            {"name": "INTEGRATIONS_SOCKETLABS_TRACKING_SENDING_API_KEY", "valueFrom": "${aws_ssm_parameter.ssm_integrations_socketlabs_api_key.arn}"},
+            {"name": "INTEGRATIONS_SOCKETLABS_TRACKING_NOTIFICATIONS_API_KEY", "valueFrom": "${aws_ssm_parameter.ssm_integrations_socketlabs_notifications_api_key.arn}"},
+            {"name": "INTEGRATIONS_SOCKETLABS_NON_TRACKING_SERVER_ID", "valueFrom": "${aws_ssm_parameter.ssm_integrations_socketlabs_non_tracking_server_id.arn}"},
+            {"name": "INTEGRATIONS_SOCKETLABS_NON_TRACKING_SENDING_API_KEY", "valueFrom": "${aws_ssm_parameter.ssm_integrations_socketlabs_non_tracking_sending_api_key.arn}"},
             {"name": "OBSERVABILITY_DATADOG_API_KEY", "valueFrom": "${aws_ssm_parameter.ssm_integrations_datadog_api_key.arn}"},
             {"name": "OBSERVABILITY_DATADOG_APPLICATION_KEY", "valueFrom": "${aws_ssm_parameter.ssm_integrations_datadog_app_id.arn}"},
-            {"name": "INTEGRATIONS_ELASTIC_API_KEY", "valueFrom": "${aws_ssm_parameter.ssm_integrations_elastic_api_key.arn}"}
+            {"name": "INTEGRATIONS_ELASTIC_API_KEY", "valueFrom": "${aws_ssm_parameter.ssm_integrations_elastic_api_key.arn}"},
+            {"name": "AWS_REGION", "valueFrom": "${aws_ssm_parameter.ssm_aws_region.arn}"},
+            {"name": "AWS_COGNITO_POOL_ID", "valueFrom": "${aws_ssm_parameter.ssm_cognito_user_poll_id.arn}"}
         ],
+    "healthCheck": {
+      "retries": 1,
+      "command": [
+          "CMD-SHELL",
+          "curl -f http://localhost:8080/actuator/health || exit 1"
+      ],
+      "timeout": 3src/main/resources/profiles/prod.yaml,
+      "interval": 10,
+      "startPeriod": 120
+    },
     "logConfiguration": {
       "logDriver": "awsfirelens",
       "options": {
@@ -77,7 +93,7 @@ resource "aws_ecs_task_definition" "task-def" {
   },
   {
     "essential": true,
-    "image": "amazon/aws-for-fluent-bit:latest",
+    "image": "amazon/aws-for-fluent-bit:2.19.0",
     "name": "log_router",
     "firelensConfiguration": {
       "type": "fluentbit",

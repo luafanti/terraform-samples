@@ -73,6 +73,17 @@ resource "aws_lb_listener" "alb-http-listener" {
   }
 }
 
+resource "aws_lb_listener" "alb-test-listener" {
+  load_balancer_arn = aws_alb.alb.id
+  port              = "8443"
+  protocol          = "HTTP"
+
+  default_action {
+    target_group_arn = aws_alb_target_group.blue-target-group.id
+    type             = "forward"
+  }
+}
+
 resource "aws_ssm_parameter" "ssm_alb_url" {
   name  = "/${var.stack_name}/${var.environment}/alb/url"
   type  = "String"

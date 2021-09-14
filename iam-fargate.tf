@@ -9,6 +9,12 @@ resource "aws_iam_role" "tasks-service-role" {
   assume_role_policy = data.aws_iam_policy_document.tasks-service-assume-policy.json
 }
 
+resource "aws_iam_role" "application_role" {
+  name               = "FargateApplicationRole" 
+  path               = "/"
+  assume_role_policy = data.aws_iam_policy_document.tasks-service-assume-policy.json
+}
+
 data "aws_iam_policy_document" "tasks-service-assume-policy" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -38,6 +44,29 @@ resource "aws_iam_policy" "ssm_access_policy" {
   })
 }
 
+resource "aws_iam_policy" "cognito_user_pool_managment" {
+  name        = "ManageCognitoUserPoolAccounts"
+  description = "Allow manage cognito user pool accounts"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "cognito-idp:AdminDeleteUser",
+          "cognito-idp:AdminEnableUser",
+          "cognito-idp:AdminCreateUser",
+          "cognito-idp:AdminDisableUser",
+          "cognito-idp:AdminRemoveUserFromGroup",
+          "cognito-idp:AdminAddUserToGroup"
+        ]
+        Effect   = "Allow"
+        Resource = "${aws_cognito_user_pool.pool.arn}"
+      },
+    ]
+  })
+}
+
 resource "aws_iam_role_policy_attachment" "tasks-service-role-attachment" {
   role       = aws_iam_role.tasks-service-role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
@@ -46,4 +75,9 @@ resource "aws_iam_role_policy_attachment" "tasks-service-role-attachment" {
 resource "aws_iam_role_policy_attachment" "tasks-ssm-policy-attachment" {
   role       = aws_iam_role.tasks-service-role.name
   policy_arn = aws_iam_policy.ssm_access_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "application_role_cognito_management_policy_attachment" {
+  role       = aws_iam_role.application_role.name
+  policy_arn = aws_iam_policy.cognito_user_pool_managment.arn
 }
